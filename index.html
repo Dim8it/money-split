@@ -7,68 +7,121 @@
 
 <style>
 :root {
-    --bg: #1c1f24;
-    --text: #e6e6e6;
-    --table: #262a30;
-    --head: #323843;
-    --btn: #3fa96b;
-    --btnh: #36945e;
-    --hi: #ffd966;
-    --danger: #d9534f;
+    --bg-color: #1c1f24;
+    --text-color: #e6e6e6;
+    --table-bg: #262a30;
+    --header-bg: #323843;
+    --button-bg: #3fa96b;
+    --button-hover: #36945e;
+    --highlight: #ffd966;
 }
 
 body {
-    background: var(--bg);
-    color: var(--text);
     font-family: Arial, sans-serif;
+    background: var(--bg-color);
+    color: var(--text-color);
     padding: 16px;
+    transition: 0.3s;
 }
 
-h2, h3 { margin-top: 20px; }
+h2 {
+    margin-bottom: 12px;
+}
 
+/* ===== CONTROLS ===== */
 .controls {
     display: flex;
+    align-items: center;
+    gap: 12px;
     flex-wrap: wrap;
-    gap: 10px;
     margin-bottom: 12px;
 }
 
 .controls label {
     display: flex;
-    gap: 6px;
     align-items: center;
+    gap: 6px;
 }
 
-input[type=number], input[type=date] {
+input[type=number] {
     padding: 6px;
+    width: 130px;
     border-radius: 4px;
     border: none;
 }
 
+/* ===== BUTTONS ===== */
 button {
-    padding: 8px 14px;
+    padding: 8px 16px;
+    background: var(--button-bg);
     border: none;
-    border-radius: 6px;
-    background: var(--btn);
     color: #fff;
+    border-radius: 6px;
     cursor: pointer;
-    box-shadow: 0 4px 0 rgba(0,0,0,.25);
+    box-shadow: 0 4px 0 rgba(0,0,0,0.25);
+    transition: background 0.2s, transform 0.1s, box-shadow 0.1s;
+}
+
+button:hover {
+    background: var(--button-hover);
 }
 
 button:active {
     transform: translateY(2px);
-    box-shadow: 0 1px 0 rgba(0,0,0,.3);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.3);
 }
 
-.delete-btn {
-    background: var(--danger);
-    margin-left: 10px;
+/* ===== THEME SWITCH ===== */
+.theme-switch {
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
+.toggle-container {
+    position: relative;
+    width: 52px;
+    height: 26px;
+}
+
+.toggle-container input {
+    display: none;
+}
+
+.toggle-slider {
+    position: absolute;
+    inset: 0;
+    background: #bbb;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.toggle-slider:before {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+input:checked + .toggle-slider {
+    background: #2196f3;
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(26px);
+}
+
+/* ===== TABLE ===== */
 table {
-    width: 100%;
     border-collapse: collapse;
-    background: var(--table);
+    width: 100%;
+    background: var(--table-bg);
 }
 
 th, td {
@@ -77,38 +130,58 @@ th, td {
     text-align: center;
 }
 
-th { background: var(--head); }
+th {
+    background: var(--header-bg);
+}
 
 .result {
-    background: var(--hi);
-    color: #000;
     font-weight: bold;
+    background: var(--highlight);
+    color: #000;
 }
 
 .paid {
-    background: var(--btn) !important;
+    background: #3fa96b !important;
     color: #fff;
+    font-weight: bold;
 }
 
-.history-card {
-    background: #2e3440;
-    margin: 10px 0;
-    padding: 10px;
-    border-left: 4px solid var(--btn);
-    border-radius: 6px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.history-info {
-    cursor: pointer;
-}
-
+/* ===== MOBILE: HIDE COEF & FIT TABLE ===== */
 @media (max-width: 768px) {
-    th:nth-child(2), td.coef { display: none; }
-    button { width: 100%; }
-    .controls { flex-direction: column; }
+
+    /* ховаємо колонку "Коеф." */
+    th:nth-child(2),
+    td.coef {
+        display: none;
+    }
+
+    th, td {
+        padding: 6px 4px;
+        font-size: 14px;
+    }
+
+    table button {
+        padding: 6px 10px;
+        font-size: 14px;
+    }
+
+    table input[type="checkbox"] {
+        transform: scale(1.1);
+    }
+
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    button {
+        width: 100%;
+    }
+
+    .theme-switch {
+        justify-content: center;
+    }
+
 }
 </style>
 </head>
@@ -118,28 +191,33 @@ th { background: var(--head); }
 <h2>Розподіл грошей</h2>
 
 <div class="controls">
-    <label>Дата:
-        <input type="date" id="payDate">
-    </label>
-
-    <label>Сума:
-        <input type="number" id="totalSum">
+    <label>Загальна сума:
+        <input type="number" id="totalSum" placeholder="Введи суму">
     </label>
 
     <button onclick="calculate()">Порахувати</button>
-    <button onclick="saveDay()">Зберегти день</button>
+    <button onclick="resetAll()">Reset</button>
+
+    <div class="theme-switch">
+        <label class="toggle-container">
+            <input type="checkbox" id="themeToggle" onchange="toggleTheme()">
+            <span class="toggle-slider"></span>
+        </label>
+        <span>Dark / Light</span>
+    </div>
 </div>
 
 <table>
 <thead>
 <tr>
 <th>Імʼя</th>
-<th>Коеф</th>
+<th>Коеф.</th>
 <th>Присутній</th>
 <th>Сума</th>
 <th>✓</th>
 </tr>
 </thead>
+
 <tbody>
 <tr><td>Софія</td><td class="coef">200</td><td><input type="checkbox" checked></td><td class="result"></td><td><button onclick="markPaid(this)">✓</button></td></tr>
 <tr><td>Діма</td><td class="coef">110</td><td><input type="checkbox" checked></td><td class="result"></td><td><button onclick="markPaid(this)">✓</button></td></tr>
@@ -152,15 +230,34 @@ th { background: var(--head); }
 <tr><td>ЗСУ</td><td class="coef">100</td><td><input type="checkbox" checked></td><td class="result"></td><td><button onclick="markPaid(this)">✓</button></td></tr>
 <tr><td>Гурт</td><td class="coef">80</td><td><input type="checkbox" checked></td><td class="result"></td><td><button onclick="markPaid(this)">✓</button></td></tr>
 </tbody>
+
+<tfoot>
+<tr>
+<td colspan="3"><b>Загалом</b></td>
+<td id="grandTotal"></td>
+<td></td>
+</tr>
+</tfoot>
 </table>
 
-<h3>Історія виплат (клік — редагування)</h3>
-<div id="history"></div>
-
 <script>
+function toggleTheme() {
+    if (themeToggle.checked) {
+        document.documentElement.style.setProperty('--bg-color', '#f4f6f8');
+        document.documentElement.style.setProperty('--text-color', '#222');
+        document.documentElement.style.setProperty('--table-bg', '#fff');
+        document.documentElement.style.setProperty('--header-bg', '#ddd');
+    } else {
+        document.documentElement.style.setProperty('--bg-color', '#1c1f24');
+        document.documentElement.style.setProperty('--text-color', '#e6e6e6');
+        document.documentElement.style.setProperty('--table-bg', '#262a30');
+        document.documentElement.style.setProperty('--header-bg', '#323843');
+    }
+}
+
 function calculate() {
-    const total = +totalSum.value;
-    if (!total) return alert("Введи суму");
+    const total = parseFloat(totalSum.value);
+    if (!total || total <= 0) return alert("Введіть суму");
 
     const rows = document.querySelectorAll("tbody tr");
     let sumCoef = 0;
@@ -170,81 +267,46 @@ function calculate() {
             sumCoef += +r.querySelector(".coef").textContent;
     });
 
+    let used = 0;
     rows.forEach(r => {
         const cell = r.querySelector(".result");
         if (r.querySelector("input").checked) {
-            cell.textContent = (total * r.querySelector(".coef").textContent / sumCoef).toFixed(2);
+            const val = total * r.querySelector(".coef").textContent / sumCoef;
+            cell.textContent = val.toFixed(2) + " грн";
+            used += val;
             cell.classList.remove("paid");
-        } else cell.textContent = "";
+        } else {
+            cell.textContent = "";
+        }
     });
+
+    const diff = total - used;
+    for (let i = rows.length - 1; i >= 0; i--) {
+        const cell = rows[i].querySelector(".result");
+        if (cell.textContent) {
+            cell.textContent =
+                (parseFloat(cell.textContent) + diff).toFixed(2) + " грн";
+            break;
+        }
+    }
+
+    grandTotal.textContent = total.toFixed(2) + " грн";
 }
 
 function markPaid(btn) {
     btn.closest("tr").querySelector(".result").classList.toggle("paid");
 }
 
-function saveDay() {
-    const date = payDate.value;
-    if (!date) return alert("Обери дату");
-
-    const data = {};
-    document.querySelectorAll("tbody tr").forEach(r => {
-        const name = r.cells[0].textContent;
-        const cell = r.querySelector(".result");
-        if (cell.textContent)  // зберігаємо ВСІ результати, не тільки paid
-            data[name] = cell.textContent;
+function resetAll() {
+    totalSum.value = "";
+    document.querySelectorAll(".result").forEach(r => {
+        r.textContent = "";
+        r.classList.remove("paid");
     });
-
-    const db = JSON.parse(localStorage.getItem("payments")) || {};
-    db[date] = { total: totalSum.value, payouts: data };
-    localStorage.setItem("payments", JSON.stringify(db));
-    renderHistory();
+    document.querySelectorAll("tbody input").forEach(c => c.checked = true);
+    grandTotal.textContent = "";
 }
-
-function deleteDay(date) {
-    if (!confirm(`Видалити дату ${date}?`)) return;
-    const db = JSON.parse(localStorage.getItem("payments")) || {};
-    delete db[date];
-    localStorage.setItem("payments", JSON.stringify(db));
-    renderHistory();
-}
-
-function renderHistory() {
-    const db = JSON.parse(localStorage.getItem("payments")) || {};
-    history.innerHTML = "";
-
-    Object.keys(db).sort().reverse().forEach(d => {
-        const div = document.createElement("div");
-        div.className = "history-card";
-
-        div.innerHTML = `
-            <div class="history-info" onclick="loadDay('${d}')">
-                <b>${d}</b> — ${db[d].total} грн
-            </div>
-            <button class="delete-btn" onclick="deleteDay('${d}')">🗑</button>
-        `;
-
-        history.appendChild(div);
-    });
-}
-
-function loadDay(date) {
-    const db = JSON.parse(localStorage.getItem("payments"));
-    payDate.value = date;
-    totalSum.value = db[date].total;
-
-    document.querySelectorAll(".result").forEach(c => c.classList.remove("paid"));
-
-    document.querySelectorAll("tbody tr").forEach(r => {
-        const name = r.cells[0].textContent;
-        if (db[date].payouts[name])
-            r.querySelector(".result").classList.add("paid");
-    });
-}
-
-renderHistory();
 </script>
 
 </body>
 </html>
-
