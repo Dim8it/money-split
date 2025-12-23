@@ -146,12 +146,12 @@ th {
     font-weight: bold;
 }
 
-/* ===== MOBILE: FIT TABLE ===== */
-@media (max-width: 600px) {
+/* ===== MOBILE: HIDE COEF & FIT TABLE ===== */
+@media (max-width: 768px) {
 
     /* ховаємо колонку "Коеф." */
-    table th:nth-child(2),
-    table td:nth-child(2) {
+    th:nth-child(2),
+    td.coef {
         display: none;
     }
 
@@ -181,6 +181,7 @@ th {
     .theme-switch {
         justify-content: center;
     }
+
 }
 </style>
 </head>
