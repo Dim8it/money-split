@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Розподіл грошей колядки</title>
+
+<style>
+:root {
+    --bg-color: #1c1f24;
+    --text-color: #e6e6e6;
+    --table-bg: #262a30;
+    --header-bg: #323843;
+
+    --button-bg: #3fa96b;
+    --button-hover: #36945e;
+
+    --highlight: #ffd966;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    padding: 16px;
+    transition: background 0.3s, color 0.3s;
+}
+
+h2 {
+    margin-bottom: 12px;
+}
+
+/* ===== CONTROLS ===== */
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.controls label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+input[type=number] {
+    padding: 6px;
+    width: 130px;
+    border-radius: 4px;
+    border: none;
+}
+
+/* ===== BUTTONS ===== */
+button {
+    padding: 8px 16px;
+    background-color: var(--button-bg);
+    border: none;
+    color: white;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.2s, transform 0.1s, box-shadow 0.1s;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.25);
+}
+
+button:hover {
+    background-color: var(--button-hover);
+}
+
+button:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.3);
+}
+
+/* ===== THEME SWITCH ===== */
+.theme-switch {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.toggle-container {
+    position: relative;
+    width: 52px;
+    height: 26px;
+}
+
+.toggle-container input {
+    display: none;
+}
+
+.toggle-slider {
+    position: absolute;
+    inset: 0;
+    background-color: #bbb;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.toggle-slider:before {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+input:checked + .toggle-slider {
+    background-color: #2196f3;
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(26px);
+}
+
+/* ===== TABLE ===== */
+.table-wrapper {
+    overflow-x: auto;
+}
+
+table {
+    border-collapse: collapse;
+    min-width: 700px;
+    width: 100%;
+    background: var(--table-bg);
+}
+
+th, td {
+    border: 1px solid #555;
+    padding: 8px;
+    text-align: center;
+}
+
+th {
+    background-color: var(--header-bg);
+}
+
+.result {
+    font-weight: bold;
+    background-color: var(--highlight);
+    color: #000;
+}
+
+.paid {
+    background-color: #3fa96b !important;
+    color: #fff;
+    font-weight: bold;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 600px) {
+    h2 {
+        text-align: center;
+    }
+
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .controls label {
+        justify-content: space-between;
+    }
+
+    button {
+        width: 100%;
+    }
+
+    .theme-switch {
+        justify-content: center;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<h2>Розподіл грошей</h2>
+
+<div class="controls">
+    <label>Загальна сума:
+        <input type="number" id="totalSum" placeholder="Введи суму">
+    </label>
+
+    <button onclick="calculate()">Порахувати</button>
+    <button onclick="resetAll()">Reset</button>
+
+    <div class="theme-switch">
+        <label class="toggle-container">
+            <input type="checkbox" id="themeToggle" onchange="toggleTheme()">
+            <span class="toggle-slider"></span>
+        </label>
+        <span>Dark / Light</span>
+    </div>
+</div>
+
+<div class="table-wrapper">
+<table>
+<thead>
+<tr>
+<th>Імʼя</th>
+<th>Коеф.</th>
+<th>Присутній</th>
+<th>Сума</th>
+<th>✓</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>Софія</td><td class="coef">200</td><td><input type="checkbox" checked></td><td class="result"></td><td><button onclick="markPaid(this)">✓</button></td></tr>
+<tr><td>Діма</td><td class="coef">110</td><td><input type="checkbox" checked></td><td class="result"></td><td><button onclick="markPaid(this)">✓</button></td></tr>
+<tr><td>Ярик</td><td class="coef">110</td><td><input type="checkbox" checked></td><td class="result"></td><td><button onclick="markPaid(this)">✓</button></td></tr>
+<tr><td>Діана</td><td class="coef">110</td><td><input type="checkbox" checked></td><td class="result"></td><td><button onclick="markPaid(this)">✓</button></td></tr>
+<tr><td>Маруся</td><td class="coef">110</td><td><input type="checkbox" checked></td><td class="result"></td><td><button onclick="markPaid(this)">✓</button></td></tr>
+<tr><td>Аріна</td><td class="coef">60</td><td><input type="checkbox" checked></td><td class="result"></td><td><button onclick="markPaid(this)">✓</button></td></tr>
+<tr><td>Соля</td><td class="coef">60</td><td><input type="checkbox" checked></td><td class="result"></td><td><button onclick="markPaid(this)">✓</button></td></tr>
+<tr><td>Марія</td><td class="coef">60</td><td><input type="checkbox" checked></td><td class="result"></td><td><button onclick="markPaid(this)">✓</button></td></tr>
+<tr><td>ЗСУ</td><td class="coef">100</td><td><input type="checkbox" checked></td><td class="result"></td><td><button onclick="markPaid(this)">✓</button></td></tr>
+<tr><td>Гурт</td><td class="coef">80</td><td><input type="checkbox" checked></td><td class="result"></td><td><button onclick="markPaid(this)">✓</button></td></tr>
+</tbody>
+<tfoot>
+<tr>
+<td colspan="3"><b>Загалом</b></td>
+<td id="grandTotal"></td>
+<td></td>
+</tr>
+</tfoot>
+</table>
+</div>
+
+<script>
+function toggleTheme() {
+    if (themeToggle.checked) {
+        document.documentElement.style.setProperty('--bg-color', '#f4f6f8');
+        document.documentElement.style.setProperty('--text-color', '#222');
+        document.documentElement.style.setProperty('--table-bg', '#fff');
+        document.documentElement.style.setProperty('--header-bg', '#ddd');
+    } else {
+        document.documentElement.style.setProperty('--bg-color', '#1c1f24');
+        document.documentElement.style.setProperty('--text-color', '#e6e6e6');
+        document.documentElement.style.setProperty('--table-bg', '#262a30');
+        document.documentElement.style.setProperty('--header-bg', '#323843');
+    }
+}
+
+function calculate() {
+    const total = parseFloat(totalSum.value);
+    if (!total || total <= 0) return alert("Введіть суму");
+
+    const rows = document.querySelectorAll("tbody tr");
+    let sumCoef = 0;
+
+    rows.forEach(r => {
+        if (r.querySelector("input").checked)
+            sumCoef += +r.querySelector(".coef").textContent;
+    });
+
+    let used = 0;
+    rows.forEach(r => {
+        const cell = r.querySelector(".result");
+        if (r.querySelector("input").checked) {
+            const val = total * r.querySelector(".coef").textContent / sumCoef;
+            cell.textContent = val.toFixed(2) + " грн";
+            used += val;
+            cell.classList.remove("paid");
+        } else cell.textContent = "";
+    });
+
+    const diff = total - used;
+    for (let i = rows.length - 1; i >= 0; i--) {
+        const cell = rows[i].querySelector(".result");
+        if (cell.textContent) {
+            cell.textContent = (parseFloat(cell.textContent) + diff).toFixed(2) + " грн";
+            break;
+        }
+    }
+
+    grandTotal.textContent = total.toFixed(2) + " грн";
+}
+
+function markPaid(btn) {
+    btn.closest("tr").querySelector(".result").classList.toggle("paid");
+}
+
+function resetAll() {
+    totalSum.value = "";
+    document.querySelectorAll(".result").forEach(r => {
+        r.textContent = "";
+        r.classList.remove("paid");
+    });
+    document.querySelectorAll("tbody input").forEach(c => c.checked = true);
+    grandTotal.textContent = "";
+}
+</script>
+
+</body>
+</html>
