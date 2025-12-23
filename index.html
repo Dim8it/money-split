@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Розподіл грошей колядки</title>
+<title>Розподіл грошей</title>
 
 <style>
 :root {
@@ -11,19 +11,17 @@
     --text-color: #e6e6e6;
     --table-bg: #262a30;
     --header-bg: #323843;
-
     --button-bg: #3fa96b;
     --button-hover: #36945e;
-
     --highlight: #ffd966;
 }
 
 body {
     font-family: Arial, sans-serif;
-    background-color: var(--bg-color);
+    background: var(--bg-color);
     color: var(--text-color);
     padding: 16px;
-    transition: background 0.3s, color 0.3s;
+    transition: 0.3s;
 }
 
 h2 {
@@ -55,17 +53,17 @@ input[type=number] {
 /* ===== BUTTONS ===== */
 button {
     padding: 8px 16px;
-    background-color: var(--button-bg);
+    background: var(--button-bg);
     border: none;
-    color: white;
-    cursor: pointer;
+    color: #fff;
     border-radius: 6px;
-    transition: background 0.2s, transform 0.1s, box-shadow 0.1s;
+    cursor: pointer;
     box-shadow: 0 4px 0 rgba(0,0,0,0.25);
+    transition: background 0.2s, transform 0.1s, box-shadow 0.1s;
 }
 
 button:hover {
-    background-color: var(--button-hover);
+    background: var(--button-hover);
 }
 
 button:active {
@@ -93,7 +91,7 @@ button:active {
 .toggle-slider {
     position: absolute;
     inset: 0;
-    background-color: #bbb;
+    background: #bbb;
     border-radius: 30px;
     cursor: pointer;
     transition: 0.3s;
@@ -112,7 +110,7 @@ button:active {
 }
 
 input:checked + .toggle-slider {
-    background-color: #2196f3;
+    background: #2196f3;
 }
 
 input:checked + .toggle-slider:before {
@@ -120,13 +118,8 @@ input:checked + .toggle-slider:before {
 }
 
 /* ===== TABLE ===== */
-.table-wrapper {
-    overflow-x: auto;
-}
-
 table {
     border-collapse: collapse;
-    min-width: 700px;
     width: 100%;
     background: var(--table-bg);
 }
@@ -138,34 +131,47 @@ th, td {
 }
 
 th {
-    background-color: var(--header-bg);
+    background: var(--header-bg);
 }
 
 .result {
     font-weight: bold;
-    background-color: var(--highlight);
+    background: var(--highlight);
     color: #000;
 }
 
 .paid {
-    background-color: #3fa96b !important;
+    background: #3fa96b !important;
     color: #fff;
     font-weight: bold;
 }
 
-/* ===== MOBILE ===== */
+/* ===== MOBILE: FIT TABLE ===== */
 @media (max-width: 600px) {
-    h2 {
-        text-align: center;
+
+    /* ховаємо колонку "Коеф." */
+    table th:nth-child(2),
+    table td:nth-child(2) {
+        display: none;
+    }
+
+    th, td {
+        padding: 6px 4px;
+        font-size: 14px;
+    }
+
+    table button {
+        padding: 6px 10px;
+        font-size: 14px;
+    }
+
+    table input[type="checkbox"] {
+        transform: scale(1.1);
     }
 
     .controls {
         flex-direction: column;
         align-items: stretch;
-    }
-
-    .controls label {
-        justify-content: space-between;
     }
 
     button {
@@ -200,7 +206,6 @@ th {
     </div>
 </div>
 
-<div class="table-wrapper">
 <table>
 <thead>
 <tr>
@@ -211,6 +216,7 @@ th {
 <th>✓</th>
 </tr>
 </thead>
+
 <tbody>
 <tr><td>Софія</td><td class="coef">200</td><td><input type="checkbox" checked></td><td class="result"></td><td><button onclick="markPaid(this)">✓</button></td></tr>
 <tr><td>Діма</td><td class="coef">110</td><td><input type="checkbox" checked></td><td class="result"></td><td><button onclick="markPaid(this)">✓</button></td></tr>
@@ -223,6 +229,7 @@ th {
 <tr><td>ЗСУ</td><td class="coef">100</td><td><input type="checkbox" checked></td><td class="result"></td><td><button onclick="markPaid(this)">✓</button></td></tr>
 <tr><td>Гурт</td><td class="coef">80</td><td><input type="checkbox" checked></td><td class="result"></td><td><button onclick="markPaid(this)">✓</button></td></tr>
 </tbody>
+
 <tfoot>
 <tr>
 <td colspan="3"><b>Загалом</b></td>
@@ -231,7 +238,6 @@ th {
 </tr>
 </tfoot>
 </table>
-</div>
 
 <script>
 function toggleTheme() {
@@ -268,14 +274,17 @@ function calculate() {
             cell.textContent = val.toFixed(2) + " грн";
             used += val;
             cell.classList.remove("paid");
-        } else cell.textContent = "";
+        } else {
+            cell.textContent = "";
+        }
     });
 
     const diff = total - used;
     for (let i = rows.length - 1; i >= 0; i--) {
         const cell = rows[i].querySelector(".result");
         if (cell.textContent) {
-            cell.textContent = (parseFloat(cell.textContent) + diff).toFixed(2) + " грн";
+            cell.textContent =
+                (parseFloat(cell.textContent) + diff).toFixed(2) + " грн";
             break;
         }
     }
