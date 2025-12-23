@@ -191,7 +191,7 @@ function saveDay() {
     document.querySelectorAll("tbody tr").forEach(r => {
         const name = r.cells[0].textContent;
         const cell = r.querySelector(".result");
-        if (cell.classList.contains("paid"))
+        if (cell.textContent)  // зберігаємо ВСІ результати, не тільки paid
             data[name] = cell.textContent;
     });
 
@@ -247,3 +247,4 @@ renderHistory();
 
 </body>
 </html>
+
